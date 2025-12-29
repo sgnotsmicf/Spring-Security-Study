@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
 
 
-    @Operation(summary = "用户登录")
+    @Operation(summary = "用户打招呼")
     @RequestMapping("/call")
     public String index() {
 

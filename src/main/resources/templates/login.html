@@ -43,7 +43,8 @@
             color: #666666;
             font-size: 14px;
         }
-        .form-group input {
+        /* 用户名/密码输入框样式 */
+        .form-group input:not(.captcha-input) {
             width: 100%;
             padding: 12px 15px;
             border: 1px solid #e0e0e0;
@@ -84,38 +85,118 @@
         .error-message.show {
             display: block;
         }
+        .captcha-error-message {
+            text-align: center;
+            color: #f56c6c;
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: #fef0f0;
+            border-radius: 4px;
+            font-size: 14px;
+            display: none;
+        }
+        .captcha-error-message.show {
+            display: block;
+        }
+        /* 验证码同行容器：flex 布局，输入框+图片同行对齐 */
+        .captcha-group {
+            display: flex;
+            gap: 10px; /* 输入框和图片的间距 */
+            align-items: center; /* 垂直居中对齐 */
+        }
+        /* 验证码输入框：和图片高度匹配，由 flex 控制宽度 */
+        .captcha-input {
+            flex: 1; /* 占满剩余宽度 */
+            width: auto; /* 取消原 100% 宽度，适配 flex 布局 */
+            padding: 12px 15px; /* 和用户名/密码输入框保持一致内边距 */
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 14px;
+            color: #333333;
+        }
+        /* 验证码图片：保持尺寸，确保和输入框高度匹配 */
+        .captcha-img {
+            width: 120px;
+            height: 40px; /* 和输入框高度（内边距+字体）基本一致 */
+            border-radius: 4px;
+            cursor: pointer;
+            border: 1px solid #e0e0e0;
+        }
     </style>
 </head>
 <body>
 <div class="login-container">
     <h2 class="login-title">系统登录</h2>
 
-    <!-- 登录错误提示：认证失败时显示（对应 Security 配置的 /login?error=true） -->
+    <!-- 登录错误提示：用户名/密码错误 -->
     <div class="error-message" th:classappend="${param.error != null ? 'show' : ''}">
         用户名或密码错误，请重新输入！
     </div>
 
-    <!-- 登录表单：提交路径对应 Security 配置的 loginProcessingUrl("/doLogin") -->
-    <form th:action="@{/doLogin}" method="post">
-        <!-- 1. CSRF 隐藏域（若 Security 开启 CSRF 防护，必须添加！） -->
-        <!-- 若关闭 CSRF，可删除该标签；生产环境建议开启 CSRF，此标签不可少 -->
+    <!-- 验证码错误提示 -->
+    <div class="captcha-error-message" th:classappend="${param.captchaError != null ? 'show' : ''}">
+        验证码错误或已过期，请重新输入！
+    </div>
+
+    <!-- 登录表单 -->
+    <form th:action="@{/login}" method="post">
+        <!-- CSRF 隐藏域 -->
         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
 
-        <!-- 2. 用户名输入框：name 属性对应 Security 配置的 usernameParameter("username") -->
+        <!-- 用户名输入框 -->
         <div class="form-group">
             <label for="username">用户名</label>
             <input type="text" id="username" name="username" placeholder="请输入用户名" required>
         </div>
 
-        <!-- 3. 密码输入框：name 属性对应 Security 配置的 passwordParameter("password") -->
+        <!-- 密码输入框 -->
         <div class="form-group">
             <label for="password">密码</label>
             <input type="password" id="password" name="password" placeholder="请输入密码" required>
         </div>
 
-        <!-- 4. 登录按钮 -->
+        <!-- 验证码输入框与图片（调整后：label 单独一行，输入框+图片同一行） -->
+        <div class="form-group">
+            <label for="captcha">验证码</label>
+            <div class="captcha-group">
+                <input type="text" id="captcha" name="captcha" class="captcha-input" placeholder="请输入验证码" required>
+                <img th:src="@{/captcha}" alt="验证码" class="captcha-img" id="captchaImg" title="点击刷新验证码">
+            </div>
+        </div>
+
+        <!-- 登录按钮 -->
         <button type="submit" class="login-btn">登录</button>
     </form>
 </div>
+
+<!-- 验证码刷新逻辑 -->
+<script th:inline="javascript">
+    // 1. 封装公共刷新函数
+    window.refreshCaptcha = function() {
+        const captchaImg = document.getElementById('captchaImg');
+        if (!captchaImg) {
+            console.error('未找到验证码图片元素');
+            return;
+        }
+        try {
+            const baseUrl = /*[[@{/captcha}]]*/ '/captcha';
+            const newUrl = baseUrl + '?t=' + new Date().getTime();
+            captchaImg.src = newUrl;
+            console.log('验证码刷新请求发送：', newUrl);
+        } catch (e) {
+            console.error('验证码刷新失败：', e);
+        }
+    };
+
+    // 2. DOM 加载完成后绑定图片点击事件
+    document.addEventListener('DOMContentLoaded', function() {
+        const captchaImg = document.getElementById('captchaImg');
+        if (captchaImg) {
+            captchaImg.addEventListener('click', window.refreshCaptcha);
+        } else {
+            console.error('未找到验证码图片元素，无法绑定点击事件');
+        }
+    });
+</script>
 </body>
 </html>

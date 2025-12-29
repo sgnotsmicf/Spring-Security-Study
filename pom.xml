@@ -98,6 +98,9 @@
 			<groupId>org.thymeleaf.extras</groupId>
 			<artifactId>thymeleaf-extras-springsecurity6</artifactId>
 		</dependency>
+
+		<!--图形验证码-->
+
 	</dependencies>
 
 	<build>
