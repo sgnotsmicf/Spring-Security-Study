@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<!-- 引入 Thymeleaf 和 Spring Security 命名空间 -->
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security6">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>用户登录 - Spring Security 自定义登录页</title>
+    <!-- 简单内联样式，优化页面美观度 -->
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: "Microsoft YaHei", sans-serif;
+            background-color: #f5f7fa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .login-container {
+            background-color: #ffffff;
+            padding: 30px 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            width: 400px;
+        }
+        .login-title {
+            text-align: center;
+            color: #333333;
+            margin-bottom: 30px;
+            font-size: 24px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #666666;
+            font-size: 14px;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 14px;
+            color: #333333;
+        }
+        .form-group input:focus {
+            outline: none;
+            border-color: #409eff;
+            box-shadow: 0 0 0 2px rgba(64, 158, 255, 0.2);
+        }
+        .login-btn {
+            width: 100%;
+            padding: 12px 0;
+            background-color: #409eff;
+            color: #ffffff;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .login-btn:hover {
+            background-color: #337ecc;
+        }
+        .error-message {
+            text-align: center;
+            color: #f56c6c;
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: #fef0f0;
+            border-radius: 4px;
+            font-size: 14px;
+            display: none;
+        }
+        /* 认证失败时显示错误信息 */
+        .error-message.show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+<div class="login-container">
+    <h2 class="login-title">系统登录</h2>
+
+    <!-- 登录错误提示：认证失败时显示（对应 Security 配置的 /login?error=true） -->
+    <div class="error-message" th:classappend="${param.error != null ? 'show' : ''}">
+        用户名或密码错误，请重新输入！
+    </div>
+
+    <!-- 登录表单：提交路径对应 Security 配置的 loginProcessingUrl("/doLogin") -->
+    <form th:action="@{/doLogin}" method="post">
+        <!-- 1. CSRF 隐藏域（若 Security 开启 CSRF 防护，必须添加！） -->
+        <!-- 若关闭 CSRF，可删除该标签；生产环境建议开启 CSRF，此标签不可少 -->
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+        <!-- 2. 用户名输入框：name 属性对应 Security 配置的 usernameParameter("username") -->
+        <div class="form-group">
+            <label for="username">用户名</label>
+            <input type="text" id="username" name="username" placeholder="请输入用户名" required>
+        </div>
+
+        <!-- 3. 密码输入框：name 属性对应 Security 配置的 passwordParameter("password") -->
+        <div class="form-group">
+            <label for="password">密码</label>
+            <input type="password" id="password" name="password" placeholder="请输入密码" required>
+        </div>
+
+        <!-- 4. 登录按钮 -->
+        <button type="submit" class="login-btn">登录</button>
+    </form>
+</div>
+</body>
+</html>
