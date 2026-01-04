@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>403 - 无访问权限</title>
+    <!-- 引入Bootstrap简化样式（无需本地下载，CDN直接引入），若不想用Bootstrap，可替换为下方纯CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* 额外自定义样式，提升页面美观度 */
+        .page-403 {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #f8f9fa;
+        }
+        .error-card {
+            width: 100%;
+            max-width: 500px;
+            padding: 3rem 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.08);
+            background-color: #fff;
+            text-align: center;
+        }
+        .error-icon {
+            font-size: 5rem;
+            color: #dc3545;
+            margin-bottom: 1.5rem;
+        }
+        .error-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #212529;
+            margin-bottom: 1rem;
+        }
+        .error-desc {
+            font-size: 1.1rem;
+            color: #6c757d;
+            margin-bottom: 2rem;
+        }
+        .back-home-btn {
+            padding: 0.8rem 2rem;
+            font-size: 1rem;
+            background-color: #0d6efd;
+            border: none;
+            border-radius: 0.5rem;
+            color: #fff;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .back-home-btn:hover {
+            background-color: #0a58ca;
+            color: #fff;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+<div class="page-403">
+    <div class="error-card">
+        <div class="error-icon">
+            <i class="bi bi-exclamation-triangle-fill"></i> <!-- Bootstrap图标 -->
+        </div>
+        <h1 class="error-title">403 Forbidden</h1>
+        <p class="error-desc" th:text="'抱歉，你暂无权限访问该资源，请联系管理员开通权限或返回首页。'">
+            抱歉，你暂无权限访问该资源，请联系管理员开通权限或返回首页。
+        </p>
+        <!-- 跳转回你的首页（对应你之前的/index接口，可修改为你的实际首页路径） -->
+        <a th:href="@{/index}" class="back-home-btn">返回首页</a>
+    </div>
+</div>
+
+<!-- 引入Bootstrap图标和JS（可选，仅为了显示图标） -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+</body>
+</html>
