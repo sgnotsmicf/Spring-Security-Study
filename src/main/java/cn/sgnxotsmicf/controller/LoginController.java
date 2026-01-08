@@ -15,19 +15,19 @@ import java.security.Principal;
 public class LoginController {
 
     // 映射自定义登录页，返回 Thymeleaf 模板名称（对应 resources/templates/login.html）
-    @GetMapping("/login")
-    public String showLoginPage(Principal principal) {
-        // 如果用户已登录，直接跳转到首页
-        if (principal != null) {
-            return "redirect:/index";
-        }
-
-        //获取当前登录用户的完整信息，比如用户名、id、角色、权限等
-        //Principal principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-
-        return "login"; // 指向 src/main/resources/templates 下的 login.html
-    }
+//    @GetMapping("/login")
+//    public String showLoginPage(Principal principal) {
+//        // 如果用户已登录，直接跳转到首页
+//        if (principal != null) {
+//            return "redirect:/index";
+//        }
+//
+//        //获取当前登录用户的完整信息，比如用户名、id、角色、权限等
+//        //Principal principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+//
+//
+//        return "login"; // 指向 src/main/resources/templates 下的 login.html
+//    }
 
     // 认证成功后的首页
 //    @RequestMapping("/index")

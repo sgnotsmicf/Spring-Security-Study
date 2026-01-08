@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>登录 - Axios异步提交</title>
+    <!-- 第一步：引入axios库（CDN方式，无需本地下载，直接运行） -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+<!-- 1. 移除form的action和method属性（不再需要表单默认提交）
+     2. 给form绑定submit事件，用于阻止默认行为并执行axios提交
+-->
+<form id="loginForm">
+    <input type="text" name="username" id="username" placeholder="请输入用户名">
+    <input type="password" name="password" id="password" placeholder="请输入密码">
+    <button type="submit">登录</button>
+</form>
+
+<script>
+    // 第二步：获取表单元素，绑定submit事件
+    const loginForm = document.getElementById('loginForm');
+
+    loginForm.addEventListener('submit', function(e) {
+        // 关键：阻止表单的默认同步提交行为（避免页面跳转）
+        e.preventDefault();
+
+        // 第三步：获取输入框中的用户名和密码
+        const username = document.getElementById('username').value.trim();
+        const password = document.getElementById('password').value.trim();
+
+        // 简单校验：不能为空
+        if (!username || !password) {
+            alert('用户名和密码不能为空！');
+            return;
+        }
+
+        // 第四步：使用axios发送异步POST请求
+        axios({
+            url: 'http://localhost:8081/login', // 后端登录接口地址（对应loginProcessingUrl("/login")）
+            method: 'post', // 请求方法为POST
+            // 方式1：提交form-data格式（与传统表单提交格式一致，适配Spring Security内置的POST /login）
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded' // 指定请求体格式
+            },
+            data: `username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}` // 拼接参数（encodeURIComponent处理特殊字符）
+
+            // 方式2：提交json格式（需后端适配接收@RequestBody，Spring Security内置POST /login不支持此格式，仅作参考）
+            // headers: {
+            //     'Content-Type': 'application/json'
+            // },
+            // data: {
+            //     username: username,
+            //     password: password
+            // }
+        })
+            .then(response => {
+                // 请求成功回调（后端返回响应数据）
+                console.log('登录请求成功：', response);
+                // 可根据后端返回结果做后续处理（如跳转页面、存储令牌等）
+                alert('登录成功！');
+                // 示例：跳转到首页
+                // window.location.href = '/index';
+            })
+            .catch(error => {
+                // 请求失败回调（网络错误、认证失败等）
+                console.error('登录请求失败：', error);
+                alert('登录失败！请检查用户名密码或网络连接。');
+            });
+    });
+</script>
+</body>
+</html>

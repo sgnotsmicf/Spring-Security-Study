@@ -2,13 +2,11 @@ package cn.sgnxotsmicf.domain.po;
 
 import com.baomidou.mybatisplus.annotation.*;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
-
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -31,6 +29,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 @TableName("tb_user")
 public class User implements Serializable, UserDetails {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     @TableId(value = "id", type = IdType.AUTO)
@@ -40,7 +39,7 @@ public class User implements Serializable, UserDetails {
      * 用户名
      */
     @TableField("user_name")
-    private String userName;
+    private String username;
 
     /**
      * 密码
@@ -130,11 +129,12 @@ public class User implements Serializable, UserDetails {
     /**
      * 权限列表
      */
-    @JsonIgnore
+    //@JsonIgnore
     @TableField(exist = false)
     private List<Permission> permissionList;
 
     //返回用户的权限(角色、code)
+    @JsonIgnore
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         //这里面最关键的是role.getRole()，role.getRole()是角色的code，例如：ROLE_ADMIN、ROLE_USER等
@@ -144,32 +144,44 @@ public class User implements Serializable, UserDetails {
         //角色管理控制
         //return roleList.stream().map(role -> new SimpleGrantedAuthority(role.getRole())).toList();//"ROLE_"
         //权限管理控制
-        //return permissionList.stream().map(permission -> new SimpleGrantedAuthority(permission.getCode())).toList();
-        return List.of();
+        return permissionList.stream().map(permission -> new SimpleGrantedAuthority(permission.getCode())).toList();
+        //return List.of();
     }
 
     @Override
     public String getUsername() {
-        return this.userName;
+        return this.username;
     }
 
     @Override
     public boolean isAccountNonExpired() {
-        return this.isAccountNonExpired == 1;
+        if (this.isAccountNonExpired != null) {
+            return this.isAccountNonExpired == 1;
+        }
+        return true;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return this.isAccountNonLocked == 1;
+        if (this.isAccountNonLocked != null) {
+            return this.isAccountNonLocked == 1;
+        }
+        return true;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return this.isCredentialsNonExpired == 1;
+        if (this.isCredentialsNonExpired != null) {
+            return this.isCredentialsNonExpired == 1;
+        }
+        return true;
     }
 
     @Override
     public boolean isEnabled() {
-        return this.isEnabled == 1;
+        if (this.isEnabled != null) {
+            return this.isEnabled == 1;
+        }
+        return true;
     }
 }

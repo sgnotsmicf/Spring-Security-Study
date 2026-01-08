@@ -71,13 +71,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
 //            System.out.println(user.getUsername() + " has role: " + role.getRole());
 //        }
 //        user.setRoleList(roleList);
-//        //权限管理控制
-//        List<Permission> permissionList = permissionMapper.selectPermissionByUserId(user.getId());
-//        for (Permission permission : permissionList) {
-//            System.out.println(user.getUsername() + " has permission: " + permission.getCode());
-//        }
-//        user.setPermissionList(permissionList);
-//        System.out.println(user);
+        //权限管理控制
+        List<Permission> permissionList = permissionMapper.selectPermissionByUserId(user.getId());
+        for (Permission permission : permissionList) {
+            System.out.println(user.getUsername() + " has permission: " + permission.getCode());
+        }
+        user.setPermissionList(permissionList);
+        System.out.println(user);
 //        String encryptedPassword = user.getPassword();
 //        if (!user.getPassword().startsWith("$")) {
 //            BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();

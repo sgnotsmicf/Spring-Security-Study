@@ -1,9 +1,17 @@
 package cn.sgnxotsmicf.controller;
 
+import cn.sgnxotsmicf.domain.po.Permission;
+import cn.sgnxotsmicf.domain.po.User;
+import cn.sgnxotsmicf.mapper.PermissionMapper;
+import cn.sgnxotsmicf.mapper.UserMapper;
+import cn.sgnxotsmicf.result.R;
 import io.swagger.v3.oas.annotations.Operation;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 /**
  * <p>
@@ -25,6 +33,25 @@ public class UserController {
      * 所以如果要使用hasAuthority方法，权限名称不需要包含"ROLE_"前缀，在实现UserDetailsService的loadUserByUsername方法时，
      * 要确保返回的UserDetails对象的getAuthorities方法返回的权限列表中包含权限名称。
      */
+    @Autowired
+    private UserMapper userMapper;
+
+    @Autowired
+    private PermissionMapper permissionMapper;
+
+
+
+    @RequestMapping("/list")
+    public R<List<User>> userList() {
+        List<User> users = userMapper.selectList(null);
+        // 为每个用户加载权限信息
+        users.forEach(user -> {
+            List<Permission> permissions = permissionMapper.selectPermissionByUserId(user.getId());
+            user.setPermissionList(permissions);
+        });
+
+        return R.success("用户列表", users);
+    }
 
     @PreAuthorize(value = "hasAuthority('user')")
     @Operation(summary = "用户打招呼")
